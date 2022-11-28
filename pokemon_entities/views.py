@@ -75,6 +75,8 @@ def show_pokemon(request, pokemon_id):
         pokemon = {} 
         pokemon['pokemon_id']=int(pokemon_id)
         pokemon['title_ru']=one_pokemon.title
+        pokemon['title_en']=one_pokemon.title_en
+        pokemon['title_jp']=one_pokemon.title_jp
         pokemon['description']=one_pokemon.description
         pokemon['img_url']=request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
     else:
