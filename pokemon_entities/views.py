@@ -79,6 +79,13 @@ def show_pokemon(request, pokemon_id):
         pokemon['title_jp']=one_pokemon.title_jp
         pokemon['description']=one_pokemon.description
         pokemon['img_url']=request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
+        if one_pokemon.previous_evolution:
+            old_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolution)
+            previous_pokemon = {}
+            previous_pokemon['title_ru']=old_pokemon.title
+            previous_pokemon['pokemon_id']=old_pokemon.id
+            previous_pokemon['img_url']=old_pokemon.photo.url
+            pokemon['previous_evolution']=previous_pokemon
     else:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
