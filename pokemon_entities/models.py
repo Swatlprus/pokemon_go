@@ -19,10 +19,10 @@ class PokemonEntity(models.Model):
     appeared_at = models.DateTimeField(default=datetime.now)
     disappeared_at = models.DateTimeField(default=datetime.now)
     level = models.IntegerField(default=0)
-    health = models.IntegerField(default=0)
-    strength = models.IntegerField(default=0)
-    defence = models.IntegerField(default=0)
-    stamina = models.IntegerField(default=0)
+    health = models.IntegerField(default=0, blank=True, null=True)
+    strength = models.IntegerField(default=0, blank=True, null=True)
+    defence = models.IntegerField(default=0, blank=True, null=True)
+    stamina = models.IntegerField(default=0, blank=True, null=True)
 
     def __str__(self):
         return self.pokemon.title
