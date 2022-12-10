@@ -71,27 +71,30 @@ def show_pokemon(request, pokemon_id):
             request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
         )
     one_pokemon = get_object_or_404(Pokemon, id=int(pokemon_id))
-    pokemon = {} 
-    pokemon['pokemon_id']=int(pokemon_id)
-    pokemon['title_ru']=one_pokemon.title
-    pokemon['title_en']=one_pokemon.title_en
-    pokemon['title_jp']=one_pokemon.title_jp
-    pokemon['description']=one_pokemon.description
-    pokemon['img_url']=request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
+    pokemon = {
+        'pokemon_id': int(pokemon_id),
+        'title_ru': one_pokemon.title,
+        'title_en': one_pokemon.title_en,
+        'title_jp': one_pokemon.title_jp,
+        'description': one_pokemon.description,
+        'img_url': request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
+        } 
     if hasattr(one_pokemon, 'previous_evolution'):
         old_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolution)
-        previous_pokemon = {}
-        previous_pokemon['title_ru']=old_pokemon.title
-        previous_pokemon['pokemon_id']=old_pokemon.id
-        previous_pokemon['img_url']=old_pokemon.photo.url
-        pokemon['previous_evolution']=previous_pokemon
+        context = {
+        'pokemon_id': old_pokemon.id,
+        'title_ru': old_pokemon.title,
+        'img_url': old_pokemon.photo.url,
+        }
+        pokemon['previous_evolution']=context
     if one_pokemon.evolution.first():
         new_pokemon = Pokemon.objects.get(title=one_pokemon.evolution.first())
-        next_pokemon = {}
-        next_pokemon['title_ru']=new_pokemon.title
-        next_pokemon['pokemon_id']=new_pokemon.id
-        next_pokemon['img_url']=new_pokemon.photo.url
-        pokemon['next_evolution']=next_pokemon
+        context = {
+        'pokemon_id': new_pokemon.id,
+        'title_ru': new_pokemon.title,
+        'img_url': new_pokemon.photo.url,
+        }
+        pokemon['next_evolution']=context
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(), 'pokemon': pokemon
