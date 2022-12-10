@@ -4,6 +4,8 @@ from django.shortcuts import render
 from .models import Pokemon
 from .models import PokemonEntity
 from django.utils.timezone import localtime
+from django.shortcuts import get_object_or_404
+
 
 
 MOSCOW_CENTER = [55.751244, 37.618423]
@@ -61,38 +63,35 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    pokemon_entity = PokemonEntity.objects.get(id=int(pokemon_id), appeared_at__lte=LOCALTIME, disappeared_at__gte=LOCALTIME)
-    if pokemon_entity:   
-        for pokemon_entity in pokemon_entity.pokemon.pokemon_entities.all(): 
-            add_pokemon(
-                folium_map, pokemon_entity.lat,
-                pokemon_entity.lon,
-                request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
-            )
-        one_pokemon = Pokemon.objects.get(id=int(pokemon_id))
-        pokemon = {} 
-        pokemon['pokemon_id']=int(pokemon_id)
-        pokemon['title_ru']=one_pokemon.title
-        pokemon['title_en']=one_pokemon.title_en
-        pokemon['title_jp']=one_pokemon.title_jp
-        pokemon['description']=one_pokemon.description
-        pokemon['img_url']=request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
-        if one_pokemon.previous_evolution:
-            old_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolution)
-            previous_pokemon = {}
-            previous_pokemon['title_ru']=old_pokemon.title
-            previous_pokemon['pokemon_id']=old_pokemon.id
-            previous_pokemon['img_url']=old_pokemon.photo.url
-            pokemon['previous_evolution']=previous_pokemon
-        if one_pokemon.evolution.first():
-            new_pokemon = Pokemon.objects.get(title=one_pokemon.evolution.first())
-            next_pokemon = {}
-            next_pokemon['title_ru']=new_pokemon.title
-            next_pokemon['pokemon_id']=new_pokemon.id
-            next_pokemon['img_url']=new_pokemon.photo.url
-            pokemon['next_evolution']=next_pokemon
-    else:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+    pokemon_entity = get_object_or_404(PokemonEntity, id=int(pokemon_id), appeared_at__lte=LOCALTIME, disappeared_at__gte=LOCALTIME) 
+    for pokemon_entity in pokemon_entity.pokemon.pokemon_entities.all(): 
+        add_pokemon(
+            folium_map, pokemon_entity.lat,
+            pokemon_entity.lon,
+            request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
+        )
+    one_pokemon = get_object_or_404(Pokemon, id=int(pokemon_id))
+    pokemon = {} 
+    pokemon['pokemon_id']=int(pokemon_id)
+    pokemon['title_ru']=one_pokemon.title
+    pokemon['title_en']=one_pokemon.title_en
+    pokemon['title_jp']=one_pokemon.title_jp
+    pokemon['description']=one_pokemon.description
+    pokemon['img_url']=request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
+    if hasattr(one_pokemon, 'previous_evolution'):
+        old_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolution)
+        previous_pokemon = {}
+        previous_pokemon['title_ru']=old_pokemon.title
+        previous_pokemon['pokemon_id']=old_pokemon.id
+        previous_pokemon['img_url']=old_pokemon.photo.url
+        pokemon['previous_evolution']=previous_pokemon
+    if one_pokemon.evolution.first():
+        new_pokemon = Pokemon.objects.get(title=one_pokemon.evolution.first())
+        next_pokemon = {}
+        next_pokemon['title_ru']=new_pokemon.title
+        next_pokemon['pokemon_id']=new_pokemon.id
+        next_pokemon['img_url']=new_pokemon.photo.url
+        pokemon['next_evolution']=next_pokemon
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(), 'pokemon': pokemon
