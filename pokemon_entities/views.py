@@ -86,8 +86,8 @@ def show_pokemon(request, pokemon_id):
             previous_pokemon['pokemon_id']=old_pokemon.id
             previous_pokemon['img_url']=old_pokemon.photo.url
             pokemon['previous_evolution']=previous_pokemon
-        if one_pokemon.pokemon_self.first():
-            new_pokemon = Pokemon.objects.get(title=one_pokemon.pokemon_self.first())
+        if one_pokemon.evolution.first():
+            new_pokemon = Pokemon.objects.get(title=one_pokemon.evolution.first())
             next_pokemon = {}
             next_pokemon['title_ru']=new_pokemon.title
             next_pokemon['pokemon_id']=new_pokemon.id
