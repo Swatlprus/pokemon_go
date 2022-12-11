@@ -50,6 +50,7 @@ def show_all_pokemons(request):
         else:
             pokemons_on_page.append({
                 'pokemon_id': pokemon.id,
+                'img_url': DEFAULT_IMAGE_URL,
                 'title_ru': pokemon.title,
             })
 
