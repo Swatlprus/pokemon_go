@@ -1,11 +1,9 @@
 import folium
-from django.http import HttpResponseNotFound
 from django.shortcuts import render
 from .models import Pokemon
 from .models import PokemonEntity
 from django.utils.timezone import localtime
 from django.shortcuts import get_object_or_404
-
 
 
 MOSCOW_CENTER = [55.751244, 37.618423]
@@ -79,7 +77,7 @@ def show_pokemon(request, pokemon_id):
         'description': one_pokemon.description,
         'img_url': request.build_absolute_uri(pokemon_entity.pokemon.photo.url)
         } 
-    if hasattr(one_pokemon, 'previous_evolution'):
+    if one_pokemon.previous_evolution is not None:
         old_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolution)
         context = {
         'pokemon_id': old_pokemon.id,
@@ -87,8 +85,8 @@ def show_pokemon(request, pokemon_id):
         'img_url': old_pokemon.photo.url,
         }
         pokemon['previous_evolution']=context
-    if one_pokemon.evolution.first():
-        new_pokemon = Pokemon.objects.get(title=one_pokemon.evolution.first())
+    if one_pokemon.previous_evolutions.first():
+        new_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolutions.first())
         context = {
         'pokemon_id': new_pokemon.id,
         'title_ru': new_pokemon.title,
