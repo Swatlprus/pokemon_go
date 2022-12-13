@@ -88,8 +88,8 @@ def show_pokemon(request, pokemon_id):
         'img_url': old_pokemon.photo.url,
         }
         pokemon['previous_evolution']=context
-    if one_pokemon.previous_evolutions.first():
-        new_pokemon = Pokemon.objects.get(title=one_pokemon.previous_evolutions.first())
+    if one_pokemon.next_evolutions.first():
+        new_pokemon = Pokemon.objects.get(title=one_pokemon.next_evolutions.first())
         context = {
         'pokemon_id': new_pokemon.id,
         'title_ru': new_pokemon.title,
